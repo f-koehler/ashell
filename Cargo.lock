@@ -243,6 +243,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "flexi_logger",
+ "futures-lite 2.5.0",
  "hex_color",
  "hyprland",
  "iced",
@@ -253,6 +254,8 @@ dependencies = [
  "pipewire",
  "serde",
  "serde_yaml",
+ "swayipc",
+ "swayipc-async",
  "sysinfo",
  "tokio",
  "wayland-client",
@@ -375,6 +378,16 @@ dependencies = [
  "event-listener 5.3.1",
  "event-listener-strategy",
  "pin-project-lite",
+]
+
+[[package]]
+name = "async-pidfd-next"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8d735ceae68fef3fc01e2b54e3f8971db1e5f5f3774bd7ff4a679c96ce2c145c"
+dependencies = [
+ "async-io 2.4.0",
+ "libc",
 ]
 
 [[package]]
@@ -3771,6 +3784,42 @@ dependencies = [
  "skrifa",
  "yazi",
  "zeno",
+]
+
+[[package]]
+name = "swayipc"
+version = "3.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b8c50cb2e98e88b52066a35ef791fffd8f6fa631c3a4983de18ba41f718c736"
+dependencies = [
+ "serde",
+ "serde_json",
+ "swayipc-types",
+]
+
+[[package]]
+name = "swayipc-async"
+version = "2.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9928dd773eb37a4253a4b266269be6eb3ed99c4c71d5b700b24dd852bd03cb89"
+dependencies = [
+ "async-io 2.4.0",
+ "async-pidfd-next",
+ "futures-lite 2.5.0",
+ "serde",
+ "serde_json",
+ "swayipc-types",
+]
+
+[[package]]
+name = "swayipc-types"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "551233c60323e87cfb8194c21cc44577ab848d00bb7fa2d324a2c7f52609eaff"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
 ]
 
 [[package]]

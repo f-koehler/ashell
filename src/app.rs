@@ -7,6 +7,7 @@ use crate::{
         self, clipboard, clock::Clock, keyboard_layout::KeyboardLayout,
         keyboard_submap::KeyboardSubmap, launcher, privacy::PrivacyMessage, settings::Settings,
         system_info::SystemInfo, title::Title, updates::Updates, workspaces::Workspaces,
+        workspaces_sway::WorkspacesSway,
     },
     outputs::{HasOutput, Outputs},
     services::{privacy::PrivacyService, ReadOnlyService, ServiceEvent},
@@ -28,11 +29,12 @@ pub struct App {
     config: Config,
     outputs: Outputs,
     updates: Updates,
-    workspaces: Workspaces,
-    window_title: Title,
+    // workspaces: Workspaces,
+    workspaces_sway: WorkspacesSway,
+    // window_title: Title,
     system_info: SystemInfo,
-    keyboard_layout: KeyboardLayout,
-    keyboard_submap: KeyboardSubmap,
+    // keyboard_layout: KeyboardLayout,
+    // keyboard_submap: KeyboardSubmap,
     clock: Clock,
     privacy: Option<PrivacyService>,
     pub settings: Settings,
@@ -53,6 +55,7 @@ pub enum Message {
     OpenClipboard,
     Updates(modules::updates::Message),
     Workspaces(modules::workspaces::Message),
+    WorkspacesSway(modules::workspaces_sway::Message),
     Title(modules::title::Message),
     SystemInfo(modules::system_info::Message),
     KeyboardLayout(modules::keyboard_layout::Message),
@@ -73,11 +76,12 @@ impl App {
                     config,
                     outputs,
                     updates: Updates::default(),
-                    workspaces: Workspaces::default(),
-                    window_title: Title::default(),
+                    // workspaces: Workspaces::default(),
+                    workspaces_sway: WorkspacesSway::default(),
+                    // window_title: Title::default(),
                     system_info: SystemInfo::default(),
-                    keyboard_layout: KeyboardLayout::default(),
-                    keyboard_submap: KeyboardSubmap::default(),
+                    // keyboard_layout: KeyboardLayout::default(),
+                    // keyboard_submap: KeyboardSubmap::default(),
                     clock: Clock::default(),
                     privacy: None,
                     settings: Settings::default(),
@@ -146,13 +150,16 @@ impl App {
                 Task::none()
             }
             Message::Workspaces(msg) => {
-                self.workspaces.update(msg);
-
+                // self.workspaces.update(msg);
+                Task::none()
+            }
+            Message::WorkspacesSway(msg) => {
+                self.workspaces_sway.update(msg);
                 Task::none()
             }
             Message::Title(message) => {
-                self.window_title
-                    .update(message, self.config.truncate_title_after_length);
+                // self.window_title
+                //     .update(message, self.config.truncate_title_after_length);
                 Task::none()
             }
             Message::SystemInfo(message) => {
@@ -160,11 +167,11 @@ impl App {
                 Task::none()
             }
             Message::KeyboardLayout(message) => {
-                self.keyboard_layout.update(message);
+                // self.keyboard_layout.update(message);
                 Task::none()
             }
             Message::KeyboardSubmap(message) => {
-                self.keyboard_submap.update(message);
+                // self.keyboard_submap.update(message);
                 Task::none()
             }
             Message::Clock(message) => {
@@ -239,20 +246,25 @@ impl App {
                             .as_ref()
                             .map(|_| self.updates.view(id).map(Message::Updates)),
                     )
+                    // .push(
+                    //     self.workspaces
+                    //         .view(
+                    //             &self.config.appearance.workspace_colors,
+                    //             self.config.appearance.special_workspace_colors.as_deref(),
+                    //         )
+                    //         .map(Message::Workspaces),
+                    // )
                     .push(
-                        self.workspaces
-                            .view(
-                                &self.config.appearance.workspace_colors,
-                                self.config.appearance.special_workspace_colors.as_deref(),
-                            )
-                            .map(Message::Workspaces),
+                        self.workspaces_sway
+                            .view(&self.config.appearance.workspace_colors)
+                            .map(Message::WorkspacesSway),
                     )
                     .height(Length::Shrink)
                     .align_y(Alignment::Center)
                     .spacing(4);
 
                 let center = Row::new()
-                    .push_maybe(self.window_title.view().map(|v| v.map(Message::Title)))
+                    // .push_maybe(self.window_title.view().map(|v| v.map(Message::Title)))
                     .spacing(4);
 
                 let right = Row::new()
@@ -261,16 +273,16 @@ impl App {
                             .view(&self.config.system)
                             .map(|c| c.map(Message::SystemInfo)),
                     )
-                    .push_maybe(
-                        self.keyboard_submap
-                            .view(&self.config.keyboard.submap)
-                            .map(|l| l.map(Message::KeyboardSubmap)),
-                    )
-                    .push_maybe(
-                        self.keyboard_layout
-                            .view(&self.config.keyboard.layout)
-                            .map(|l| l.map(Message::KeyboardLayout)),
-                    )
+                    // .push_maybe(
+                    //     self.keyboard_submap
+                    //         .view(&self.config.keyboard.submap)
+                    //         .map(|l| l.map(Message::KeyboardSubmap)),
+                    // )
+                    // .push_maybe(
+                    //     self.keyboard_layout
+                    //         .view(&self.config.keyboard.layout)
+                    //         .map(|l| l.map(Message::KeyboardLayout)),
+                    // )
                     .push(
                         Row::new()
                             .push(
@@ -325,19 +337,24 @@ impl App {
                         .subscription(updates_config)
                         .map(Message::Updates)
                 }),
-                Some(self.workspaces.subscription().map(Message::Workspaces)),
-                Some(self.window_title.subscription().map(Message::Title)),
+                // Some(self.workspaces.subscription().map(Message::Workspaces)),
+                Some(
+                    self.workspaces_sway
+                        .subscription()
+                        .map(Message::WorkspacesSway),
+                ),
+                // Some(self.window_title.subscription().map(Message::Title)),
                 Some(self.system_info.subscription().map(Message::SystemInfo)),
-                Some(
-                    self.keyboard_layout
-                        .subscription()
-                        .map(Message::KeyboardLayout),
-                ),
-                Some(
-                    self.keyboard_submap
-                        .subscription()
-                        .map(Message::KeyboardSubmap),
-                ),
+                // Some(
+                //     self.keyboard_layout
+                //         .subscription()
+                //         .map(Message::KeyboardLayout),
+                // ),
+                // Some(
+                //     self.keyboard_submap
+                //         .subscription()
+                //         .map(Message::KeyboardSubmap),
+                // ),
                 Some(self.clock.subscription().map(Message::Clock)),
                 Some(
                     PrivacyService::subscribe().map(|e| Message::Privacy(PrivacyMessage::Event(e))),

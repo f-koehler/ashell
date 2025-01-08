@@ -32,3 +32,6 @@ wayland-protocols = { version = "0.32.3", features = ["client", "unstable"] }
 itertools = "0.13"
 hex_color = { version = "3.0", features = ["serde"] }
 anyhow = "1"
+swayipc-async = "2.0.4"
+swayipc = "3.0.3"
+futures-lite = "2.5.0"
