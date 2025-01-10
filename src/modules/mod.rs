@@ -7,6 +7,7 @@ pub mod privacy;
 pub mod settings;
 pub mod system_info;
 pub mod title;
+pub mod title_sway;
 pub mod updates;
 pub mod workspaces;
 pub mod workspaces_sway;

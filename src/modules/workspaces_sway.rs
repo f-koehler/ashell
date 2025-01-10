@@ -22,7 +22,7 @@ use swayipc_async::Event;
 use swayipc_async::EventType;
 
 #[derive(Debug, Clone)]
-struct WorkspaceSway {
+pub struct WorkspaceSway {
     pub id: i64,
     pub name: String,
     pub output: String,
@@ -85,9 +85,12 @@ impl WorkspacesSway {
 
                 if !already_active {
                     error!("changing workspace to: {}", id);
-                    swayipc::Connection::new()
+                    if let Err(e) = swayipc::Connection::new()
                         .unwrap()
-                        .run_command(format!("workspace number {}", id));
+                        .run_command(format!("workspace number {}", id))
+                    {
+                        error!("failed to dispatch workspace change: {:?}", e);
+                    }
                 }
             }
         }

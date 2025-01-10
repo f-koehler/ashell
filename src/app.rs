@@ -6,8 +6,8 @@ use crate::{
     modules::{
         self, clipboard, clock::Clock, keyboard_layout::KeyboardLayout,
         keyboard_submap::KeyboardSubmap, launcher, privacy::PrivacyMessage, settings::Settings,
-        system_info::SystemInfo, title::Title, updates::Updates, workspaces::Workspaces,
-        workspaces_sway::WorkspacesSway,
+        system_info::SystemInfo, title::Title, title_sway::TitleSway, updates::Updates,
+        workspaces::Workspaces, workspaces_sway::WorkspacesSway,
     },
     outputs::{HasOutput, Outputs},
     services::{privacy::PrivacyService, ReadOnlyService, ServiceEvent},
@@ -32,6 +32,7 @@ pub struct App {
     // workspaces: Workspaces,
     workspaces_sway: WorkspacesSway,
     // window_title: Title,
+    window_title_sway: TitleSway,
     system_info: SystemInfo,
     // keyboard_layout: KeyboardLayout,
     // keyboard_submap: KeyboardSubmap,
@@ -57,6 +58,7 @@ pub enum Message {
     Workspaces(modules::workspaces::Message),
     WorkspacesSway(modules::workspaces_sway::Message),
     Title(modules::title::Message),
+    TitleSway(modules::title_sway::Message),
     SystemInfo(modules::system_info::Message),
     KeyboardLayout(modules::keyboard_layout::Message),
     KeyboardSubmap(modules::keyboard_submap::Message),
@@ -79,6 +81,7 @@ impl App {
                     // workspaces: Workspaces::default(),
                     workspaces_sway: WorkspacesSway::default(),
                     // window_title: Title::default(),
+                    window_title_sway: TitleSway::default(),
                     system_info: SystemInfo::default(),
                     // keyboard_layout: KeyboardLayout::default(),
                     // keyboard_submap: KeyboardSubmap::default(),
@@ -160,6 +163,11 @@ impl App {
             Message::Title(message) => {
                 // self.window_title
                 //     .update(message, self.config.truncate_title_after_length);
+                Task::none()
+            }
+            Message::TitleSway(message) => {
+                self.window_title_sway
+                    .update(message, self.config.truncate_title_after_length);
                 Task::none()
             }
             Message::SystemInfo(message) => {
@@ -265,6 +273,11 @@ impl App {
 
                 let center = Row::new()
                     // .push_maybe(self.window_title.view().map(|v| v.map(Message::Title)))
+                    .push_maybe(
+                        self.window_title_sway
+                            .view()
+                            .map(|v| v.map(Message::TitleSway)),
+                    )
                     .spacing(4);
 
                 let right = Row::new()
@@ -344,6 +357,11 @@ impl App {
                         .map(Message::WorkspacesSway),
                 ),
                 // Some(self.window_title.subscription().map(Message::Title)),
+                Some(
+                    self.window_title_sway
+                        .subscription()
+                        .map(Message::TitleSway),
+                ),
                 Some(self.system_info.subscription().map(Message::SystemInfo)),
                 // Some(
                 //     self.keyboard_layout
