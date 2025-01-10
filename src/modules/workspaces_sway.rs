@@ -60,7 +60,7 @@ pub struct WorkspacesSway {
 #[derive(Debug, Clone)]
 pub enum Message {
     WorkspacesChanged(Vec<WorkspaceSway>),
-    ChangeWorkspace(i64),
+    ChangeWorkspace(String),
 }
 
 impl Default for WorkspacesSway {
@@ -77,17 +77,17 @@ impl WorkspacesSway {
             Message::WorkspacesChanged(workspaces) => {
                 self.workspaces = workspaces;
             }
-            Message::ChangeWorkspace(id) => {
+            Message::ChangeWorkspace(name) => {
                 let already_active = self
                     .workspaces
                     .iter()
-                    .any(|workspace| workspace.active && workspace.id == id);
+                    .any(|workspace| workspace.active && workspace.name == name);
 
                 if !already_active {
-                    error!("changing workspace to: {}", id);
+                    debug!("changing workspace to: {}", name);
                     if let Err(e) = swayipc::Connection::new()
                         .unwrap()
-                        .run_command(format!("workspace number {}", id))
+                        .run_command(format!("workspace number {}", name))
                     {
                         error!("failed to dispatch workspace change: {:?}", e);
                     }
@@ -110,7 +110,7 @@ impl WorkspacesSway {
                         )
                         .style(WorkspaceButtonStyle(false, Some(color)).into_style())
                         .padding(if workspace.active { [0, 16] } else { [0, 8] })
-                        .on_press(Message::ChangeWorkspace(workspace.id))
+                        .on_press(Message::ChangeWorkspace(workspace.name.clone()))
                         // .width(if workspace.active {
                         //     Length::Fixed(32.)
                         // } else {
