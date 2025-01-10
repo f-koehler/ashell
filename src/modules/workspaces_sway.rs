@@ -37,7 +37,7 @@ fn get_workspaces() -> Vec<WorkspaceSway> {
             vec![]
         },
         |mut connection| {
-            connection
+            let mut workspaces = connection
                 .get_workspaces()
                 .unwrap_or_default()
                 .iter()
@@ -48,7 +48,9 @@ fn get_workspaces() -> Vec<WorkspaceSway> {
                     active: workspace.focused,
                     urgent: workspace.urgent,
                 })
-                .collect()
+                .collect::<Vec<_>>();
+            workspaces.sort_by(|a, b| a.name.cmp(&b.name));
+            workspaces
         },
     )
 }
