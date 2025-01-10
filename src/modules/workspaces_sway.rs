@@ -102,19 +102,20 @@ impl WorkspacesSway {
                 self.workspaces
                     .iter()
                     .map(|workspace| {
+                        let color = workspace_colors.get(0).copied();
                         button(
                             container(text(workspace.name.as_str()).size(10))
                                 .align_x(alignment::Horizontal::Center)
                                 .align_y(alignment::Vertical::Center),
                         )
-                        .style(WorkspaceButtonStyle(true, None).into_style())
+                        .style(WorkspaceButtonStyle(false, Some(color)).into_style())
                         .padding(if workspace.active { [0, 16] } else { [0, 8] })
                         .on_press(Message::ChangeWorkspace(workspace.id))
-                        .width(if workspace.active {
-                            Length::Fixed(32.)
-                        } else {
-                            Length::Fixed(16.)
-                        })
+                        // .width(if workspace.active {
+                        //     Length::Fixed(32.)
+                        // } else {
+                        //     Length::Fixed(16.)
+                        // })
                         .height(16)
                         .into()
                     })
