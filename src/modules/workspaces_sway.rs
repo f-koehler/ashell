@@ -98,13 +98,33 @@ impl WorkspacesSway {
         }
     }
 
-    pub fn view(&self, workspace_colors: &[AppearanceColor]) -> Element<Message> {
+    pub fn view(
+        &self,
+        workspace_colors: &[AppearanceColor],
+        special_workspace_colors: Option<&[AppearanceColor]>,
+    ) -> Element<Message> {
         container(
             Row::with_children(
                 self.workspaces
                     .iter()
                     .map(|workspace| {
-                        let color = workspace_colors.get(0).copied();
+                        let color = match special_workspace_colors {
+                            None => workspace_colors.get(0).copied(),
+                            Some(special_colors) => match workspace.urgent {
+                                false => workspace_colors.get(0).copied(),
+                                true => special_colors.get(0).copied(),
+                            },
+                        };
+
+                        // let color = match workspace.urgent {
+                        //     false => workspace_colors.get(0).copied(),
+                        //     true => match special_workspace_colors {
+                        //         Some(color) => Some(color),
+                        //         None => workspace_colors.get(0).copied()
+                        //     },
+                        // };
+
+                        // let color = workspace_colors.get(0).copied();
                         button(
                             container(text(workspace.name.as_str()).size(10))
                                 .align_x(alignment::Horizontal::Center)

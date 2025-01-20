@@ -264,7 +264,10 @@ impl App {
                     // )
                     .push(
                         self.workspaces_sway
-                            .view(&self.config.appearance.workspace_colors)
+                            .view(
+                                &self.config.appearance.workspace_colors,
+                                self.config.appearance.special_workspace_colors.as_deref(),
+                            )
                             .map(Message::WorkspacesSway),
                     )
                     .height(Length::Shrink)
